@@ -1,0 +1,29 @@
+{
+  "name": "theyard-m",
+  "license": "0BSD",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.1.2",
+    "@supabase/supabase-js": "^2.50.2",
+    "expo": "~53.0.13",
+    "expo-barcode-scanner": "^13.0.1",
+    "expo-router": "~5.1.1",
+    "expo-status-bar": "~2.2.3",
+    "react": "^18.2.0",
+    "react-native": "^0.71.8",
+    "react-native-gesture-handler": "~2.24.0",
+    "react-native-safe-area-context": "5.4.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  },
+  "private": true,
+  "packageManager": "yarn@3.6.0"
+}
