@@ -1,48 +1,74 @@
-// app/terms.js
-import { useState, useEffect } from "react";
-import { supabase } from "../supabase";
-import { useRouter } from "expo-router";
-import { View, Text, ScrollView, Button } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Button,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import { useEffect, useState } from "react";
+import { router } from "expo-router";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../context/AuthContext";
 
 export default function Terms() {
-  const [text, setText] = useState("");
-  const [version, setVersion] = useState(null);
-  const [error, setError] = useState("");
-  const router = useRouter();
+  const { user } = useAuth();
+  const [terms, setTerms] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // load latest terms
-    supabase
+    loadTerms();
+  }, []);
+
+  const loadTerms = async () => {
+    const { data, error } = await supabase
       .from("Terms")
       .select("version, text")
       .order("activeFrom", { ascending: false })
       .limit(1)
-      .single()
-      .then(({ data, error }) => {
-        if (error) setError(error.message);
-        else {
-          setVersion(data.version);
-          setText(data.text);
-        }
-      });
-  }, []);
+      .single();
 
-  const accept = async () => {
-    const session = supabase.auth.session();
-    await supabase
-      .from("User")
-      .update({ acceptedTerms: version })
-      .eq("id", session.user.id);
-    router.replace("/"); // root layout will now let them through
+    if (error || !data) {
+      Alert.alert("Error", "Could not load terms");
+      return;
+    }
+
+    setTerms(data);
+    setLoading(false);
   };
 
-  if (error) return <Text>Error loading terms: {error}</Text>;
+  const acceptTerms = async () => {
+    const { error } = await supabase
+      .from("User")
+      .update({ acceptedTerms: terms.version })
+      .eq("id", user.id);
+
+    if (error) {
+      Alert.alert("Error", error.message);
+      return;
+    }
+
+    router.replace("/dashboard");
+  };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
-    <View style={{ flex: 1, padding: 16 }}>
-      <ScrollView style={{ flex: 1, marginBottom: 24 }}>
-        <Text>{text}</Text>
+    <View style={{ flex: 1, padding: 20 }}>
+      <ScrollView style={{ flex: 1, marginBottom: 20 }}>
+        <Text style={{ fontSize: 22, marginBottom: 12 }}>
+          Terms & Conditions
+        </Text>
+        <Text>{terms.text}</Text>
       </ScrollView>
-      <Button title="I Accept" onPress={accept} />
+
+      <Button title="I Accept" onPress={acceptTerms} />
     </View>
   );
 }
