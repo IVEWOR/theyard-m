@@ -12,15 +12,19 @@ import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
 
 export default function Terms() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [terms, setTerms] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
     loadTerms();
-  }, []);
+  }, [user, loading]);
 
-  const loadTerms = async () => {
+  async function loadTerms() {
     const { data, error } = await supabase
       .from("Terms")
       .select("version, text")
@@ -32,12 +36,10 @@ export default function Terms() {
       Alert.alert("Error", "Could not load terms");
       return;
     }
-
     setTerms(data);
-    setLoading(false);
-  };
+  }
 
-  const acceptTerms = async () => {
+  async function acceptTerms() {
     const { error } = await supabase
       .from("User")
       .update({ acceptedTerms: terms.version })
@@ -47,11 +49,10 @@ export default function Terms() {
       Alert.alert("Error", error.message);
       return;
     }
-
     router.replace("/dashboard");
-  };
+  }
 
-  if (loading) {
+  if (!terms) {
     return (
       <View style={{ flex: 1, justifyContent: "center" }}>
         <ActivityIndicator size="large" />
@@ -61,13 +62,12 @@ export default function Terms() {
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
-      <ScrollView style={{ flex: 1, marginBottom: 20 }}>
+      <ScrollView>
         <Text style={{ fontSize: 22, marginBottom: 12 }}>
           Terms & Conditions
         </Text>
         <Text>{terms.text}</Text>
       </ScrollView>
-
       <Button title="I Accept" onPress={acceptTerms} />
     </View>
   );
