@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "theyard-m",
+    "name": "The Yard",
     "slug": "theyard-m",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,19 +10,28 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#F9E9E8"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.theyard.app"
+      "bundleIdentifier": "com.theyard.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "The Yard needs access to your camera to scan QR codes for check-in."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#F9E9E8"
       },
       "package": "com.theyard.app",
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,7 +44,20 @@
         }
       ],
       "expo-router",
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      "expo-document-picker",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow The Yard to access your camera to scan QR codes."
+        }
+      ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "3bfca286-ef6f-4142-9960-812739c2f911"
+      }
+    }
   }
 }
